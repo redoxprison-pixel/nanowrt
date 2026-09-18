@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NanoWrt platform manifest (reserved for a future milestone)",
+  "description": "Structural contract only. Identity equality and package metadata must be verified separately before any future apply operation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "identity", "packages"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "identity": {"$ref": "#/$defs/identity"},
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "architecture", "url", "sha256"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "minLength": 1},
+          "architecture": {"type": "string", "minLength": 1},
+          "url": {"type": "string", "pattern": "^https://[^/]+/.+"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "kernel_abi": {"type": "string", "minLength": 1}
+        },
+        "allOf": [{
+          "if": {"properties": {"name": {"pattern": "^kmod-"}}},
+          "then": {"required": ["kernel_abi"]}
+        }]
+      }
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["distribution", "release", "revision", "board_name", "target", "architecture", "kernel", "kernel_abi"],
+      "properties": {
+        "distribution": {"enum": ["OpenWrt", "ImmortalWrt"]},
+        "release": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "minLength": 1},
+        "board_name": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+        "architecture": {"type": "string", "minLength": 1},
+        "kernel": {"type": "string", "minLength": 1},
+        "kernel_abi": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

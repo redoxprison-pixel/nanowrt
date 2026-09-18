@@ -1,0 +1,31 @@
+# macOS metadata, including deployment sidecars
+.DS_Store
+._*
+.AppleDouble/
+__MACOSX/
+
+# Host test caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local credentials (never part of router fixtures)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Local archives, logs and editor/temporary files
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.log
+*.tmp
+*.swp
+*~

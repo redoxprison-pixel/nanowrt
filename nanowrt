@@ -1,0 +1,27 @@
+#!/bin/sh
+# NanoWrt milestone 0.1: observations only, never apply changes.
+set -f
+NW_HOME=$(CDPATH= cd -P "$(dirname "$0")" && pwd) || exit 1
+NW_ROOT=${NANOWRT_ROOT:-}
+case "$NW_ROOT" in ''|/*) ;; *) printf '%s\n' 'NANOWRT_ROOT must be absolute' >&2; exit 2 ;; esac
+for nw_module in common inventory platform packages network modem; do
+    # shellcheck disable=SC1090
+    . "$NW_HOME/lib/$nw_module.sh" || exit 1
+done
+case "${1:-}" in
+    doctor)
+        [ "$#" -eq 1 ] || { printf '%s\n' 'Usage: ./nanowrt doctor'; exit 2; }
+        nw_warn=0 nw_fail=0
+        nw_inventory
+        nw_platform
+        nw_kernel_abi
+        nw_resources
+        nw_network
+        nw_modem
+        nw_components
+        printf '\nSummary: %s WARN, %s FAIL\n' "$nw_warn" "$nw_fail"
+        [ "$nw_fail" -eq 0 ]
+        ;;
+    -h|--help) printf '%s\n' 'Usage: ./nanowrt doctor' ;;
+    *) printf '%s\n' 'Usage: ./nanowrt doctor' >&2; exit 2 ;;
+esac

@@ -1,0 +1,24 @@
+name: Static and fixture tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: POSIX syntax, ShellCheck and fixture tests
+        run: |
+          command -v shellcheck
+          ./tests/run.sh
+      - name: BusyBox ash and utilities with isolated fixtures
+        # Official Python Alpine image supplies Python and BusyBox; no SDK or builds.
+        run: |
+          docker run --rm --network none --read-only --tmpfs /tmp \
+            -v "$PWD:/work:ro" -w /work \
+            -e PYTHONDONTWRITEBYTECODE=1 \
+            -e NW_TEST_SHELL='/bin/busybox ash' \
+            python:3.13-alpine sh -c 'busybox ping -c 1 -W 2 -w 3 127.0.0.1 && sh tests/run.sh'

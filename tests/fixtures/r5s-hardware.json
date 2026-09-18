@@ -1,0 +1,53 @@
+{
+  "files": {
+    "/etc/openwrt_release": "DISTRIB_ID='ImmortalWrt'\nDISTRIB_RELEASE='24.10.6'\nDISTRIB_REVISION='r33869-cf234f8de6d5'\nDISTRIB_TARGET='rockchip/armv8'\nDISTRIB_ARCH='aarch64_generic'\n",
+    "/tmp/sysinfo/board_name": "friendlyarm,nanopi-r5s\n",
+    "/tmp/sysinfo/model": "FriendlyElec NanoPi R5S\n",
+    "/proc/sys/kernel/osrelease": "6.6.133\n",
+    "/etc/opkg/distfeeds.conf": "src/gz immortalwrt_kmods https://mirrors.vsean.net/openwrt/releases/24.10.6/targets/rockchip/armv8/kmods/6.6.133-1-23375d261da0c0e9da36857794905cf7\n",
+    "/proc/mounts": "/dev/root / squashfs ro 0 0\n/dev/loop0 /overlay ext4 rw 0 0\n",
+    "/proc/meminfo": "MemTotal: 4000000 kB\nMemAvailable: 3000000 kB\n",
+    "/proc/modules": "amneziawg 1000 0 - Live 0x0\n",
+    "/etc/opkg.conf": "dest root /\ndest ram /tmp\nlists_dir ext /var/opkg-lists\noption overlay_root /overlay\n",
+    "/usr/lib/opkg/status": "Package: kernel\nVersion: 6.6.133~23375d261da0c0e9da36857794905cf7-r1\nStatus: install ok installed\n\nPackage: zapret\nVersion: 72.20260307-r1\nStatus: install ok installed\n",
+    "/etc/opkg/customfeeds.conf": "src/gz modem_kmod https://openwrt.132lan.ru/packages/24.10/packages/aarch64_generic/kmods/24.10.6/armv8\n"
+  },
+  "uci": {
+    "network.lan.device": "br-lan",
+    "network.lan.ipaddr": "192.168.1.1",
+    "network.fibocom.proto": "xmm",
+    "network.fibocom.device": "/dev/ttyUSB3",
+    "network.fibocom.ifname": "eth3"
+  },
+  "ubus": {
+    "system": {
+      "model": "FriendlyElec NanoPi R5S",
+      "board_name": "friendlyarm,nanopi-r5s",
+      "release": {
+        "distribution": "ImmortalWrt",
+        "version": "24.10.6",
+        "revision": "r33869-cf234f8de6d5",
+        "target": "rockchip/armv8"
+      },
+      "kernel": "6.6.133"
+    },
+    "network.interface.lan": {
+      "l3_device": "br-lan",
+      "up": true
+    },
+    "network.interface.fibocom": {
+      "l3_device": "eth3",
+      "device": "eth3",
+      "up": true
+    }
+  },
+  "kernel_package": "6.6.133-1-23375d261da0c0e9da36857794905cf7",
+  "processes": {
+    "nfqws": "1898"
+  },
+  "routes4": "default via 10.0.0.1 dev eth3 proto static metric 10\n",
+  "routes6": "default via fe80::1 dev eth3 metric 512\n",
+  "addresses": "3: br-lan: <UP>\n    inet 192.168.1.1/24 scope global br-lan\n    inet6 fd00::1/64 scope global\n",
+  "note": "Hardware-derived observations; config/status files below are synthetic minimal reproductions, not dumps from the router.",
+  "busybox_ping_help": "BusyBox v1.36.1\nUsage: ping [OPTIONS] HOST\n-c CNT\n-W SEC\n-w SEC\n"
+}

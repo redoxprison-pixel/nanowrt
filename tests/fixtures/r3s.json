@@ -1,0 +1,6 @@
+{
+  "board": "friendlyarm,nanopi-r3s",
+  "model": "FriendlyElec NanoPi R3S",
+  "control": "/dev/ttyACM0",
+  "data": "wwan0"
+}
