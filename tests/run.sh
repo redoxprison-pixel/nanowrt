@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-TEST_HOME=$(CDPATH= cd -P "$(dirname "$0")" && pwd)
+TEST_HOME=$(CDPATH='' cd -P "$(dirname "$0")" && pwd)
 cd "$TEST_HOME/.."
 for script in nanowrt lib/*.sh tests/run.sh; do
     sh -n "$script"
