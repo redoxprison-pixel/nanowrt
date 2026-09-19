@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NanoWrt platform selection manifest v1 (host contract)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_type",
+    "id",
+    "identity"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "document_type": {
+      "const": "platform"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z0-9_.-]+$",
+      "not": {
+        "pattern": "[\\r\\n]"
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distribution",
+        "release",
+        "board_name",
+        "target",
+        "architecture",
+        "kernel",
+        "kernel_abi",
+        "revision"
+      ],
+      "properties": {
+        "distribution": {
+          "enum": [
+            "OpenWrt",
+            "ImmortalWrt"
+          ]
+        },
+        "release": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_.,/+~-]+$",
+          "not": {
+            "pattern": "[\\r\\n]"
+          }
+        },
+        "board_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_.,/+~-]+$",
+          "not": {
+            "pattern": "[\\r\\n]"
+          }
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_.,/+~-]+$",
+          "not": {
+            "pattern": "[\\r\\n]"
+          }
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_.,/+~-]+$",
+          "not": {
+            "pattern": "[\\r\\n]"
+          }
+        },
+        "kernel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_.,/+~-]+$",
+          "not": {
+            "pattern": "[\\r\\n]"
+          }
+        },
+        "kernel_abi": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60,
+              "not": {
+                "const": "-"
+              },
+              "description": "Must additionally pass the slice-1 named ABI adapter; JSON Schema alone is insufficient."
+            }
+          ]
+        },
+        "revision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy",
+            "value",
+            "rationale"
+          ],
+          "properties": {
+            "policy": {
+              "enum": [
+                "exact",
+                "informational"
+              ]
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[a-zA-Z0-9_.,/+~-]+$",
+                  "not": {
+                    "anyOf": [
+                      {
+                        "const": "-"
+                      },
+                      {
+                        "pattern": "[\\r\\n]"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "rationale": {
+              "type": "string",
+              "maxLength": 256,
+              "pattern": "^[ -~]*$",
+              "not": {
+                "pattern": "[\\r\\n]"
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "policy": {
+                    "const": "exact"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "rationale": {
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 256,
+      "pattern": "^[ -~]*$",
+      "not": {
+        "pattern": "[\\r\\n]"
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "distribution": {
+    "state": "known",
+    "value": "ImmortalWrt",
+    "source": "synthetic-reference"
+  },
+  "release": {
+    "state": "known",
+    "value": "24.10.6",
+    "source": "synthetic-reference"
+  },
+  "board_name": {
+    "state": "known",
+    "value": "friendlyarm,nanopi-r5s",
+    "source": "synthetic-reference"
+  },
+  "target": {
+    "state": "known",
+    "value": "rockchip/armv8",
+    "source": "synthetic-reference"
+  },
+  "architecture": {
+    "state": "known",
+    "value": "aarch64_generic",
+    "source": "synthetic-reference"
+  },
+  "revision": {
+    "state": "known",
+    "value": "r33869-cf234f8de6d5",
+    "source": "synthetic-reference"
+  },
+  "kernel": {
+    "state": "known",
+    "value": "6.6.133",
+    "source": "synthetic-reference"
+  },
+  "kernel_abi": {
+    "state": "known",
+    "value": "6.6.133-1-23375d261da0c0e9da36857794905cf7",
+    "source": "synthetic-reference",
+    "verification": "unverified",
+    "method": ""
+  }
+}

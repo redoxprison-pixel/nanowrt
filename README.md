@@ -236,3 +236,24 @@ Host schemas and router positional-argument contracts are documented in
 Metadata fixtures do not verify artifact bytes. No package/artifact is
 installation-eligible yet; resolution eligibility is only the narrow consistency
 result. There is no plan command, stage/apply, executor, download or installation.
+
+### v0.2 slice 2 — deterministic platform selection
+
+Independent `lib/manifest.sh` and `lib/resolver.sh` validate normalized platform
+records and classify every candidate as MATCH / NO_MATCH / UNDETERMINED / INVALID.
+Selection requires exactly one MATCH and no UNDETERMINED contender; invalid
+active input and duplicate IDs block the entire set. Filenames/order have no
+priority. Exact and explicit informational revision policies are supported.
+
+Base selection is separate from kernel compatibility. Null ABI is unknown, not a
+wildcard. ABI comparison reuses slice 1 and requires an externally verified input
+with a method identifier; tests use synthetic evidence, not a production verifier.
+Feed ABI alone cannot prove kernel compatibility. Installation and execution flags
+remain false. No plan command, artifact inspection or package operations exist.
+
+[Platform selection contract](contracts/v1/platform-selection.md) documents the
+12-argument router interface, limits, reason codes and host validation boundary.
+`tools/platform_manifest.py` is host-only strict JSON/shape normalization, followed
+by shell contract validation. Production router JSON ingestion is not implemented;
+no general JSON Schema validation or host/router JSON parity is claimed.
+R3S fixtures are reference-only; R5S hardware validation still applies to doctor v0.1.

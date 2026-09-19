@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "document_type": "platform",
+  "id": "immortalwrt-r3s-reference",
+  "identity": {
+    "distribution": "ImmortalWrt",
+    "release": "24.10.6",
+    "board_name": "friendlyarm,nanopi-r3s",
+    "target": "rockchip/armv8",
+    "architecture": "aarch64_generic",
+    "revision": {
+      "policy": "exact",
+      "value": "r33869-cf234f8de6d5",
+      "rationale": ""
+    },
+    "kernel": "6.6.133",
+    "kernel_abi": "6.6.133-1-23375d261da0c0e9da36857794905cf7"
+  },
+  "note": "Synthetic R3S reference for negative selection tests only. No NanoWrt R3S hardware validation."
+}

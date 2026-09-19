@@ -51,7 +51,7 @@ class StaticGuardTests(unittest.TestCase):
         entry = (HOME / "nanowrt").read_text()
         modules = re.search(r"for nw_module in ([a-z ]+); do", entry).group(1).split()
         self.assertEqual(set(modules), MODULES)
-        self.assertEqual({p.stem for p in (HOME / "lib").glob("*.sh")}, MODULES | {"kernel-identity"})
+        self.assertEqual({p.stem for p in (HOME / "lib").glob("*.sh")}, MODULES | {"kernel-identity", "manifest", "resolver"})
         self.assertEqual({p.name for p in (HOME / "lib").glob("*.awk")}, {"status.awk", "opkg-config.awk"})
         for path in [HOME / "nanowrt", *sorted((HOME / "lib").glob("*.sh"))]:
             self.assertEqual(violations(path.read_text()), [], str(path))
