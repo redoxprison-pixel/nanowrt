@@ -63,7 +63,7 @@ np_exact() {
     esac
 }
 
-# An invalid JSON/host contract must be submitted here, never silently dropped.
+# An invalid JSON/host contract must be submitted here with an explicit reason code.
 np_invalid_input() {
     np_snapshot_locked=true
     np_invalid=true np_candidate_class=INVALID
@@ -83,19 +83,14 @@ np_add_manifest() {
     np_candidate_kernel=UNKNOWN np_kernel_predicate=UNDETERMINED
     nm_validate "$@"
     if [ "$nm_valid" != true ]; then
-        np_invalid_input
-        if [ "$nm_reason" = MANIFEST_SCHEMA_UNSUPPORTED ]; then
-            np_schema_invalid=true
-            np_reason MANIFEST_SCHEMA_UNSUPPORTED
-        fi
+        np_invalid_input "$nm_reason"
         return 0
     fi
     np_candidate_id=$nm_id
     case " $np_seen_ids " in
         *" $nm_id "*)
-            np_invalid_input
-            np_candidate_id=$nm_id np_reference_invalid=true
-            np_reason MANIFEST_REFERENCE_INVALID
+            np_invalid_input MANIFEST_REFERENCE_INVALID
+            np_candidate_id=$nm_id
             return 0 ;;
     esac
     np_seen_ids="$np_seen_ids $nm_id"
