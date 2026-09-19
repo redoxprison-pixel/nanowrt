@@ -45,7 +45,8 @@ The token character class describes syntax only, never a matching expression.
 
 ## Router normalized manifest interface
 
-Source trusted modules in order: kernel-identity.sh, manifest.sh, resolver.sh.
+Legacy observation mode sources kernel-identity.sh, manifest.sh, resolver.sh.
+For trusted snapshot mode also source observations.sh and verifiers.sh.
 `nm_validate` and `np_add_manifest` accept exactly these 12 quoted arguments:
 
     schema id distribution release revision_policy revision_value rationale
@@ -60,7 +61,9 @@ source priority or component-reference field.
 for completed evaluation, including invalid input: callers must inspect data.
 Trusted caller code owns the argument framing; never source or interpolate data.
 
-## Observation interface and lifecycle
+## Legacy observation interface and lifecycle
+
+For Slice 3 snapshot consumption, see [observations.md](observations.md).
 
 1. `np_reset` starts a fresh selection and initializes all observations missing.
 2. `np_observe field state value source [verification [method]]` supplies each
@@ -129,15 +132,14 @@ with a separate kernel predicate via slice-1 nk_aggregate.
 - Router ABI missing/unsupported -> UNDETERMINED / KERNEL_ABI_UNAVAILABLE.
 - Conflicting ABI -> UNDETERMINED / IDENTITY_EVIDENCE_CONFLICT and KERNEL_ABI_UNVERIFIED.
 - Known but unverified ABI -> UNDETERMINED / KERNEL_ABI_UNVERIFIED.
-- Verified marker without a method ID -> UNDETERMINED.
+- Any externally supplied verified marker/method -> UNDETERMINED.
 - ABI rejected by the slice-1 parser -> UNDETERMINED / KERNEL_METADATA_FORMAT_UNSUPPORTED.
 - Valid verified ABI equal to manifest -> TRUE; different -> FALSE / KERNEL_ABI_MISMATCH.
 
-`verified` plus a method ID is an explicit PRECONDITION from a trusted verifier,
-not proof manufactured by the selector. No production verifier is implemented.
-Tests use synthetic-test-verifier-v1 solely to exercise predicates. Feed candidates
-and slice-1 version-consistency output MUST be supplied as unverified; neither is
-a verification method. A JSON fixture cannot confer production verification.
+Slice 3 supersedes the former externally trusted marker precondition.
+Legacy marker/method arguments are audit-only, even for a registered method ID.
+Use the [sealed observation contract](observations.md) and np_load_snapshot for
+registry-produced version-consistency binding. A raw fixture cannot confer trust.
 
 Selection and even kernel COMPATIBLE do not prove artifact compatibility.
 np_installation_eligible, np_execution_supported and np_execution_authorized

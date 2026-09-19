@@ -2,13 +2,12 @@
 # Requires kernel-identity.sh and manifest.sh. No detection, JSON or file access.
 np_reset() {
     np_seen_observations='' np_observation_records='' np_observations_invalid=false
-    np_snapshot_locked=false
+    np_snapshot_locked=false np_trusted_snapshot=false np_snapshot_generation=''
     np_seen_ids='' np_matches=0 np_undetermined=0 np_invalid=false
     np_schema_invalid=false np_reference_invalid=false
     np_match_id='' np_match_kernel=UNKNOWN
     np_selected_id='' np_selection=BLOCKED np_selection_reason=MANIFEST_NOT_FOUND
     np_installation_eligible=false np_execution_supported=false np_execution_authorized=false
-    np_abi_verification=unverified np_abi_method=''
     np_distribution_state=missing np_distribution_value=''
     np_release_state=missing np_release_value=''
     np_revision_state=missing np_revision_value=''
@@ -19,8 +18,8 @@ np_reset() {
     np_kernel_abi_state=missing np_kernel_abi_value=''
 }
 
-# field, state, raw value, source; optional ABI verification marker and method ID.
-# A verified marker is an external verifier precondition, never inferred here.
+# Legacy literal observations: marker/method arguments are audit data only.
+# Only np_load_snapshot can attach a registered, sealed verification result.
 np_observe() {
     if [ "$np_snapshot_locked" = true ]; then np_observations_invalid=true; return 0; fi
     if [ "$#" -lt 4 ] || [ "$#" -gt 6 ]; then np_observations_invalid=true; return 0; fi
@@ -42,8 +41,34 @@ np_observe() {
         *) np_observations_invalid=true ;;
     esac
     if [ "$1" = kernel_abi ]; then
-        np_abi_verification=${5:-unverified} np_abi_method=${6:-}
-        np_observation_records="${np_observation_records}${#np_abi_verification}:$np_abi_verification${#np_abi_method}:$np_abi_method"
+        np_claimed_verification=${5:-unverified} np_claimed_method=${6:-}
+        np_observation_records="${np_observation_records}${#np_claimed_verification}:$np_claimed_verification${#np_claimed_method}:$np_claimed_method"
+    fi
+}
+
+# Snapshot values are copied once; generation and fault checks prevent stale reuse.
+# Snapshot globals are produced by observations.sh, never accepted as arguments.
+# shellcheck disable=SC2154
+np_load_snapshot() {
+    if [ "$np_snapshot_locked" = true ] || [ -n "$np_seen_observations" ] ||
+        ! command -v ns_ready >/dev/null 2>&1 || ! ns_ready; then
+        np_observations_invalid=true
+        return 0
+    fi
+    for np_field in distribution release revision board_name target architecture kernel kernel_abi; do
+        ns_get "$np_field"
+        np_observe "$np_field" "$ns_state" "$ns_value" "$ns_provenance"
+    done
+    np_trusted_snapshot=true np_snapshot_generation=$ns_generation
+    np_snapshot_locked=true
+}
+
+# shellcheck disable=SC2154
+np_check_snapshot() {
+    if [ "$np_trusted_snapshot" = true ]; then
+        if ! ns_ready || [ "$np_snapshot_generation" != "$ns_generation" ]; then
+            np_observations_invalid=true
+        fi
     fi
 }
 
@@ -78,6 +103,7 @@ np_invalid_input() {
 # nm_validate/nk_parse_feed/nk_aggregate publish globals in sourced modules.
 # shellcheck disable=SC2154
 np_add_manifest() {
+    np_check_snapshot
     np_snapshot_locked=true
     np_candidate_id='' np_candidate_reasons='' np_candidate_predicates=''
     np_candidate_kernel=UNKNOWN np_kernel_predicate=UNDETERMINED
@@ -151,12 +177,23 @@ np_add_manifest() {
     esac
     if [ "$nm_abi" = '-' ]; then
         np_reason KERNEL_ABI_UNAVAILABLE
+    elif [ "$np_trusted_snapshot" = true ] && [ "$ns_verification" != verified ]; then
+        np_reason KERNEL_ABI_UNVERIFIED
+        # Reasons are a closed set of internal identifiers, not input values.
+        np_pending_reasons=$ns_reasons
+        while [ -n "$np_pending_reasons" ]; do
+            np_reason "${np_pending_reasons%% *}"
+            case "$np_pending_reasons" in
+                *' '*) np_pending_reasons=${np_pending_reasons#* } ;;
+                *) np_pending_reasons='' ;;
+            esac
+        done
     elif [ "$np_kernel_abi_state" = conflicting ]; then
         np_reason IDENTITY_EVIDENCE_CONFLICT
         np_reason KERNEL_ABI_UNVERIFIED
     elif [ "$np_kernel_abi_state" != known ]; then
         np_reason KERNEL_ABI_UNAVAILABLE
-    elif [ "$np_abi_verification" != verified ] || [ -z "$np_abi_method" ]; then
+    elif [ "$np_trusted_snapshot" != true ]; then
         np_reason KERNEL_ABI_UNVERIFIED
     else
         nk_parse_feed "$nm_distribution" "$np_kernel_abi_value"
@@ -184,6 +221,7 @@ np_add_manifest() {
 }
 
 np_finish() {
+    np_check_snapshot
     np_selected_id='' np_selection=BLOCKED np_selected_kernel=UNKNOWN
     np_base_compatibility=UNKNOWN
     if [ "$np_invalid" = true ]; then

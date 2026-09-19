@@ -246,8 +246,8 @@ active input and duplicate IDs block the entire set. Filenames/order have no
 priority. Exact and explicit informational revision policies are supported.
 
 Base selection is separate from kernel compatibility. Null ABI is unknown, not a
-wildcard. ABI comparison reuses slice 1 and requires an externally verified input
-with a method identifier; tests use synthetic evidence, not a production verifier.
+wildcard. ABI comparison reuses slice 1. Slice 3 removes caller-controlled verification
+markers; only registered binding from a sealed snapshot can support comparison.
 Feed ABI alone cannot prove kernel compatibility. Installation and execution flags
 remain false. No plan command, artifact inspection or package operations exist.
 
@@ -257,3 +257,21 @@ remain false. No plan command, artifact inspection or package operations exist.
 by shell contract validation. Production router JSON ingestion is not implemented;
 no general JSON Schema validation or host/router JSON parity is claimed.
 R3S fixtures are reference-only; R5S hardware validation still applies to doctor v0.1.
+
+### v0.2 slice 3 — trusted observation verification
+
+A narrow in-memory collector preserves known/missing/conflicting/unsupported
+states and stable provenance. The static verifier
+`openwrt-immortalwrt-kernel-package-v1` derives ABI from supported installed kernel
+metadata and binds its VERSION to the observed running VERSION. Feed ABI is a
+supporting cross-check only. This is version consistency, not complete active
+kernel or artifact verification; installation/execution flags remain false.
+
+Snapshots freeze at verification and seal before resolver consumption. Late
+mutation or reuse after reset blocks selection. Arbitrary `verified`/method
+strings cannot establish trust. See [the contract](contracts/v1/observations.md)
+for lifecycle, reason codes and the trusted-caller boundary.
+
+No new CLI, live acquisition entrypoint, router JSON ingestion, plan/stage/apply,
+package operation or network access is implemented. Doctor remains unchanged.
+Slice 3 is shell/fixture tested; no new R5S or R3S hardware validation is claimed.

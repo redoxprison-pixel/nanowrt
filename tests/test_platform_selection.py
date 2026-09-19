@@ -22,17 +22,22 @@ set -eu
 . "$1/lib/kernel-identity.sh"
 . "$1/lib/manifest.sh"
 . "$1/lib/resolver.sh"
+. "$1/lib/observations.sh"
+. "$1/lib/verifiers.sh"
 shift
 np_reset
+ns_reset
 while [ "$#" -gt 0 ]; do
     kind=$1; shift
     case "$kind" in
         O) np_observe "$1" "$2" "$3" "$4" "$5" "$6"; shift 6 ;;
+        N) ns_collect "$1" "$2" "$3" "$4"; shift 4 ;;
+        V) ns_verify "$1"; ns_seal; np_load_snapshot; shift ;;
         M) np_add_manifest "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}"; shift 12 ;;
         I) np_invalid_input "$1"; shift ;;
         *) exit 91 ;;
     esac
-    if [ "$kind" != O ]; then
+    if [ "$kind" = M ] || [ "$kind" = I ]; then
         printf 'C|%s|%s|%s|%s|%s|%s\n' "$np_candidate_id" "$np_candidate_class" "$np_candidate_kernel" "$np_kernel_predicate" "$np_candidate_reasons" "$np_candidate_predicates"
     fi
 done
@@ -44,9 +49,17 @@ printf 'S|%s|%s|%s|%s|%s|%s|%s|%s\n' "$np_selection" "$np_selected_id" "$np_base
 class PlatformSelectionTests(unittest.TestCase):
     def run_selection(self, manifests=None, observations=None, records=None, script=SCRIPT):
         args = [str(HOME)]
-        for field, o in (OBS if observations is None else observations).items():
-            args += ['O', field, o['state'], o['value'], o['source'],
-                     o.get('verification', 'unverified'), o.get('method', '')]
+        observations = OBS if observations is None else observations
+        trusted = 'installed_kernel' in observations
+        for field, o in observations.items():
+            if trusted:
+                args += ['N', 'claimed_abi' if field == 'kernel_abi' else field,
+                         o['state'], o['value'], o['source']]
+            else:
+                args += ['O', field, o['state'], o['value'], o['source'],
+                         o.get('verification', 'unverified'), o.get('method', '')]
+        if trusted:
+            args += ['V', observations['kernel_abi']['method']]
         if records is not None:
             for record in records:
                 args += ['M', *record]
@@ -232,7 +245,12 @@ class PlatformSelectionTests(unittest.TestCase):
 
     def verified(self):
         o = copy.deepcopy(OBS)
-        o['kernel_abi'].update(verification='verified', method='synthetic-test-verifier-v1')
+        for field, obs in o.items():
+            obs['source'] = 'caller-claim' if field == 'kernel_abi' else 'board-json'
+        o['kernel_abi']['method'] = 'openwrt-immortalwrt-kernel-package-v1'
+        o['installed_kernel'] = dict(state='known',
+            value='6.6.133~23375d261da0c0e9da36857794905cf7-r1',
+            source='installed-kernel-package')
         return o
 
     def test_verified_abi_equal(self):
@@ -242,6 +260,7 @@ class PlatformSelectionTests(unittest.TestCase):
 
     def test_verified_abi_mismatch(self):
         o = self.verified(); o['kernel_abi']['value'] = ABI.replace('-1-', '-2-')
+        o['installed_kernel']['value'] = o['installed_kernel']['value'].replace('-r1', '-r2')
         c, s = self.run_selection(observations=o)
         self.assertEqual(c[0][4], 'FALSE')
         self.assertEqual(s[0], 'SELECTED')
@@ -250,7 +269,7 @@ class PlatformSelectionTests(unittest.TestCase):
 
     def test_unknown_abi(self):
         for state in ('missing', 'conflicting', 'unsupported'):
-            o = self.verified(); o['kernel_abi']['state'] = state
+            o = copy.deepcopy(OBS); o['kernel_abi']['state'] = state
             self.assertEqual(self.run_selection(observations=o)[0][0][4], 'UNDETERMINED')
 
     def test_unknown_schema(self):
