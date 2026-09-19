@@ -7,6 +7,8 @@ BEGIN { RS=""; FS="\n"; bad=0; records=0; installed=0 }
     for (i=1; i<=NF; i++) {
         line=$i
         sub(/\r$/, "", line)
+        # BusyBox awk can retain the final newline as an empty last field.
+        if (i == NF && line == "") continue
         if (line ~ /^[ \t]/) continue
         if (line !~ /^[A-Za-z0-9-]+:/) {bad=1; continue}
         value=line; sub(/^[^:]+:[ \t]*/, "", value)
