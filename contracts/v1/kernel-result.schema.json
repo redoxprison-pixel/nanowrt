@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NanoWrt kernel result v1 (host projection; no router JSON serializer)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "platform_compatibility",
+    "resolution_compatibility",
+    "artifact_compatibility",
+    "contract_version",
+    "resolution_eligible",
+    "installation_eligible",
+    "execution_supported",
+    "execution_authorized",
+    "reasons"
+  ],
+  "properties": {
+    "platform_compatibility": {
+      "enum": [
+        "COMPATIBLE",
+        "INCOMPATIBLE",
+        "UNKNOWN"
+      ]
+    },
+    "resolution_compatibility": {
+      "enum": [
+        "COMPATIBLE",
+        "INCOMPATIBLE",
+        "UNKNOWN"
+      ]
+    },
+    "artifact_compatibility": {
+      "enum": [
+        "INCOMPATIBLE",
+        "UNKNOWN"
+      ]
+    },
+    "contract_version": {
+      "const": 1
+    },
+    "resolution_eligible": {
+      "type": "boolean"
+    },
+    "installation_eligible": {
+      "const": false
+    },
+    "execution_supported": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "KERNEL_VERSION_MISMATCH",
+          "KERNEL_ABI_MISMATCH",
+          "KERNEL_ABI_UNAVAILABLE",
+          "KERNEL_ABI_UNVERIFIED",
+          "KERNEL_METADATA_FORMAT_UNSUPPORTED",
+          "ACTIVE_KERNEL_BINDING_UNVERIFIED",
+          "ACTIVE_KERNEL_BINDING_MISMATCH",
+          "AMBIGUOUS_KMOD_FEEDS",
+          "PACKAGE_METADATA_UNAVAILABLE",
+          "PACKAGE_METADATA_INVALID",
+          "KERNEL_DEPENDENCY_MISMATCH",
+          "DEPENDENCY_SYNTAX_UNSUPPORTED",
+          "ARTIFACT_DIGEST_UNVERIFIED",
+          "METADATA_ARTIFACT_BINDING_UNVERIFIED"
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "resolution_compatibility": {
+            "enum": [
+              "UNKNOWN",
+              "INCOMPATIBLE"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "resolution_eligible": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "resolution_eligible": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}

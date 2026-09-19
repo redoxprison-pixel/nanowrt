@@ -1,0 +1,18 @@
+{
+  "contract_version": 1,
+  "distribution": "ImmortalWrt",
+  "release": "24.10.6",
+  "revision": "r33869-cf234f8de6d5",
+  "board_name": "friendlyarm,nanopi-r5s",
+  "target": "rockchip/armv8",
+  "architecture": "aarch64_generic",
+  "running_kernel": "6.6.133",
+  "installed_kernel": "6.6.133~23375d261da0c0e9da36857794905cf7-r1",
+  "canonical_abi": "6.6.133-1-23375d261da0c0e9da36857794905cf7",
+  "artifact_dependency": "kernel (= 6.6.133~23375d261da0c0e9da36857794905cf7-r1)",
+  "feed_candidates": [
+    "6.6.133-1-23375d261da0c0e9da36857794905cf7"
+  ],
+  "artifact_verified": false,
+  "note": "Synthetic reference only. R5S doctor v0.1 hardware validation passed; no artifact verified. R3S is reference/fixture tested only."
+}

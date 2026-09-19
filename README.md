@@ -217,3 +217,22 @@ upstream/reference источников. Сроки и готовность эт
 Стандартный файл может не содержать arch declarations; compiled-in defaults
 opkg не извлекаются и не выводятся как configured architectures. Release architecture
 остаётся отдельным наблюдением. Добавлена fixture конфигурации с явными arch.
+
+## Milestone v0.2 — in development: kernel contracts slice 1
+
+v0.1.0 remains the released baseline. Its doctor dispatch, detection, output and
+exit semantics are unchanged. R5S hardware validation above applies to doctor
+v0.1, not artifact compatibility; R3S remains fixture/reference tested only.
+
+The independent `lib/kernel-identity.sh` module consumes supplied observations.
+Adapter `openwrt-immortalwrt-kernel-package`, version 1, validates the supported
+`VERSION~VERMAGIC-rRELEASE` family and produces `VERSION-RELEASE-VERMAGIC` only
+from validated components. Unsupported formats remain UNKNOWN. Running VERSION
+must match the installed package VERSION; this is limited consistency evidence,
+not proof of the full active kernel build. Feed ABI is supporting evidence only.
+
+Host schemas and router positional-argument contracts are documented in
+[contracts/v1](contracts/v1/README.md). No router JSON/schema validator is claimed.
+Metadata fixtures do not verify artifact bytes. No package/artifact is
+installation-eligible yet; resolution eligibility is only the narrow consistency
+result. There is no plan command, stage/apply, executor, download or installation.

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NanoWrt kernel reference input v1 (host only)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "distribution",
+    "release",
+    "revision",
+    "board_name",
+    "target",
+    "architecture",
+    "running_kernel",
+    "installed_kernel",
+    "canonical_abi",
+    "artifact_dependency",
+    "feed_candidates",
+    "artifact_verified",
+    "note"
+  ],
+  "properties": {
+    "distribution": {
+      "enum": [
+        "OpenWrt",
+        "ImmortalWrt"
+      ]
+    },
+    "release": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "string"
+    },
+    "board_name": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    },
+    "architecture": {
+      "type": "string"
+    },
+    "running_kernel": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})$",
+      "maxLength": 73,
+      "not": {
+        "pattern": "[\\r\\n]"
+      }
+    },
+    "installed_kernel": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})~[0-9a-f]{32}-r[1-9][0-9]{0,5}$",
+      "maxLength": 73,
+      "not": {
+        "pattern": "[\\r\\n]"
+      }
+    },
+    "canonical_abi": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})-[1-9][0-9]{0,5}-[0-9a-f]{32}$",
+      "maxLength": 73,
+      "not": {
+        "pattern": "[\\r\\n]"
+      }
+    },
+    "artifact_dependency": {
+      "type": "string",
+      "pattern": "^kernel \\(= (0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})~[0-9a-f]{32}-r[1-9][0-9]{0,5}\\)$",
+      "maxLength": 73,
+      "not": {
+        "pattern": "[\\r\\n]"
+      }
+    },
+    "note": {
+      "type": "string"
+    },
+    "contract_version": {
+      "const": 1
+    },
+    "artifact_verified": {
+      "const": false
+    },
+    "feed_candidates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
